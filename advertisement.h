@@ -5,6 +5,7 @@
 #include <igameevents.h>
 #include <iplayerinfo.h>
 #include <sh_vector.h>
+#include <iserver.h>
 
 class AdvertisementPlugin : public ISmmPlugin, public IMetamodListener
 {
@@ -13,6 +14,7 @@ public:
 	bool Unload(char *error, size_t maxlen);
 	bool Pause(char *error, size_t maxlen);
 	bool Unpause(char *error, size_t maxlen);
+	void Hook_StartupServer(const GameSessionConfiguration_t& config, ISource2WorldSession*, const char*);
 public: //hooks
 	void Hook_GameFrame( bool simulating, bool bFirstTick, bool bLastTick );
 public:

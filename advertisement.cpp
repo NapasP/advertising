@@ -1,20 +1,23 @@
 #include <stdio.h>
 #include <regex>
 #include "advertisement.h"
-#include "colors/colors.h"
-#include "iserver.h"
+#include <iserver.h>
 #include <fstream>
 #include <vector>
 #include <iostream>
 #include "utils/module.h"
-#include "KeyValues.h"
+#include "colors/colors.h"
+#include <KeyValues.h>
+#include "ctimer.h"
 
 IFileSystem* filesystem = NULL;
 CMemory fn;
 
-int tickTime;
 int countAdv;
-int updateTime;
+
+float g_flUniversalTime;
+float g_flLastTickedTime;
+bool g_bHasTicked;
 
 struct BlockAdv {
 	int dest;
@@ -26,10 +29,13 @@ std::vector< BlockAdv > advs;
 AdvertisementPlugin g_AdvertisementPlugin;
 IServerGameDLL *server = NULL;
 
+class GameSessionConfiguration_t { };
+
 // void UTIL_ClientPrintAll( int msg_dest, const char *msg_name, const char *param1, const char *param2, const char *param3, const char *param4 )
 void (*UTIL_ClientPrintAll)(int msg_dest, const char* msg_name, const char* param1, const char* param2, const char* param3, const char* param4) = nullptr;
 
 SH_DECL_HOOK3_void(IServerGameDLL, GameFrame, SH_NOATTRIB, 0, bool, bool, bool);
+SH_DECL_HOOK3_void(INetworkServerService, StartupServer, SH_NOATTRIB, 0, const GameSessionConfiguration_t&, ISource2WorldSession*, const char*);
 
 CGlobalVars *GetGameGlobals()
 {
@@ -51,11 +57,18 @@ bool AdvertisementPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t m
 	GET_V_IFACE_CURRENT(GetFileSystemFactory, filesystem, IFileSystem, FILESYSTEM_INTERFACE_VERSION);
 
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, GameFrame, server, this, &AdvertisementPlugin::Hook_GameFrame, true);
+	SH_ADD_HOOK_MEMFUNC(INetworkServerService, StartupServer, g_pNetworkServerService, this, &AdvertisementPlugin::Hook_StartupServer, true);
 
 	KeyValues* kv = new KeyValues("advertisement");
 	kv->LoadFromFile(filesystem, "addons/advertisement/advertisement.ini");
 
-	updateTime = kv->GetInt("update time");
+	new CTimer(kv->GetInt("update time"), true, true, []() {
+		auto&adv = advs[countAdv];
+
+		UTIL_ClientPrintAll(adv.dest, adv.text.c_str(), nullptr, nullptr, nullptr, nullptr);
+
+		countAdv = (countAdv+1)%advs.size();
+	});
 
 	const KeyValues *listAdv = kv->FindKey("list");
 	if (listAdv) {
@@ -91,21 +104,58 @@ bool AdvertisementPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t m
 bool AdvertisementPlugin::Unload(char *error, size_t maxlen)
 {
 	SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, GameFrame, server, this, &AdvertisementPlugin::Hook_GameFrame, true);
+	SH_REMOVE_HOOK_MEMFUNC(INetworkServerService, StartupServer, g_pNetworkServerService, this, &AdvertisementPlugin::Hook_StartupServer, true);
+
+	RemoveTimers();
 
 	return true;
 }
 
+void AdvertisementPlugin::Hook_StartupServer(const GameSessionConfiguration_t& config, ISource2WorldSession*, const char*)
+{
+	if(g_bHasTicked)
+		RemoveMapTimers();
+
+	g_bHasTicked = false;
+}
+
 void AdvertisementPlugin::Hook_GameFrame( bool simulating, bool bFirstTick, bool bLastTick )
 {
-	if (GetGameGlobals()->tickcount >= tickTime) {
-		auto&adv = advs[countAdv];
+	if (simulating && g_bHasTicked)
+	{
+		g_flUniversalTime += GetGameGlobals()->curtime - g_flLastTickedTime;
+	}
+	else
+	{
+		g_flUniversalTime += GetGameGlobals()->interval_per_tick;
+	}
 
-		UTIL_ClientPrintAll(adv.dest, adv.text.c_str(), nullptr, nullptr, nullptr, nullptr);
+	g_flLastTickedTime = GetGameGlobals()->curtime;
+	g_bHasTicked = true;
 
-		countAdv = (countAdv+1)%advs.size();
+	for (int i = g_timers.Tail(); i != g_timers.InvalidIndex();)
+	{
+		auto timer = g_timers[i];
 
-		//Hardcode to tick
-		tickTime += updateTime*64;
+		int prevIndex = i;
+		i = g_timers.Previous(i);
+
+		if (timer->m_flLastExecute == -1)
+			timer->m_flLastExecute = g_flUniversalTime;
+
+		// Timer execute
+		if (timer->m_flLastExecute + timer->m_flTime <= g_flUniversalTime)
+		{
+			timer->Execute();
+
+			if (!timer->m_bRepeat)
+			{
+				delete timer;
+				g_timers.Remove(prevIndex);
+			}
+			else
+				timer->m_flLastExecute = g_flUniversalTime;
+		}
 	}
 }
 
