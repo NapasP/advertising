@@ -1,4 +1,4 @@
-# ServerAccount
+# Advertising
 This MetaMod:Source plugin for CS2 adds the advertising
 
 ## Installation
@@ -13,5 +13,5 @@ Just as any other [AMBuild](https://wiki.alliedmods.net/AMBuild) project:
 2. Download [CS2 SDK](https://github.com/alliedmodders/hl2sdk/tree/cs2)
 3. Download [Metamod:Source](https://github.com/alliedmodders/metamod-source)
 4. `mkdir build && cd build`
-5. `python ../configure.py --enable-optimize --plugin-name=server_account --plugin-alias=server_account --sdks=cs2 --targets=x86_64 --mms_path=??? --hl2sdk-root=???`
+5. `python ../configure.py --enable-optimize --plugin-name=advertising --plugin-alias=advertising --sdks=cs2 --targets=x86_64 --mms_path=??? --hl2sdk-root=???`
 6. `ambuild`
