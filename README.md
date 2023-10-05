@@ -1,5 +1,5 @@
 # Advertising
-This MetaMod:Source plugin for CS2 adds the advertising
+This MetaMod:Source plugin for CS2 add the advertising
 
 ## Installation
 1.	Install [Metamod:Source](https://www.sourcemm.net/downloads.php/?branch=master)
