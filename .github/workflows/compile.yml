@@ -67,6 +67,7 @@ jobs:
           repository: alliedmodders/hl2sdk
           ref: cs2
           path: hl2sdk-cs2
+          submodules: recursive
 
       - name: Checkout Metamod:Source
         uses: actions/checkout@v4
@@ -74,6 +75,7 @@ jobs:
           repository: alliedmodders/metamod-source
           ref: master
           path: metamod-source
+          submodules: recursive
 
       # Build
       - name: Build
