@@ -74,7 +74,7 @@ jobs:
         with:
           repository: alliedmodders/hl2sdk-manifests
           ref: master
-          path: hl2sdk-manifests
+          path: project/hl2sdk-manifests
           submodules: recursive
 
       - name: Checkout Metamod:Source
