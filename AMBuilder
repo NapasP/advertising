@@ -15,6 +15,14 @@ for sdk_target in MMSPlugin.sdk_targets:
     os.path.join(sdk['path'], 'common', 'network_connection.proto'),
   ]
 
+  CXXINCLUDES = [
+      os.path.join(builder.sourcePath, 'hl2sdk-cs2'),
+      os.path.join(builder.sourcePath, 'hl2sdk-cs2', 'public', 'entity2'),
+      os.path.join(builder.sourcePath, 'hl2sdk-cs2', 'game', 'server'),
+  ]
+
+  binary.compiler.cxxincludes += CXXINCLUDES
+
   binary = MMSPlugin.HL2Library(builder, cxx, MMSPlugin.plugin_name, sdk)
 
   binary.sources += [
@@ -32,17 +40,6 @@ for sdk_target in MMSPlugin.sdk_targets:
 
   if binary.compiler.family == 'clang':
     binary.compiler.cxxflags += ['-Wno-register', '-frtti', '-Wno-invalid-offsetof', '-Wno-parentheses']
-
-  if sdk.get('source2', False):
-    binary.sources += [
-      'provider/source2/provider_source2.cpp',
-    ]
-  else:
-    binary.sources += [
-      'provider/source/provider_source.cpp',
-      'provider/source/provider_source_console.cpp',
-      'vsp_bridge.cpp'
-      ]
   
   if sdk['name'] == 'cs2':
     binary.custom = [builder.tools.Protoc(protoc = sdk_target.protoc, sources = PROTOS)]
