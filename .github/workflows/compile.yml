@@ -17,6 +17,8 @@ jobs:
   build:
     name: Build on ${{ matrix.os_short }}
     runs-on: ${{ matrix.os }}
+    env:
+        HL2SDKCS2: ${{ github.workspace }}/project/hl2sdk-cs2
     strategy:
       fail-fast: false
       matrix:
@@ -66,21 +68,31 @@ jobs:
         with:
           repository: alliedmodders/hl2sdk
           ref: cs2
-          path: hl2sdk-cs2
+          path: project/hl2sdk-cs2
+          submodules: recursive
+
+      - name: Checkout hl2sdk-manifests
+        uses: actions/checkout@v4
+        with:
+          repository: alliedmodders/hl2sdk-manifests
+          ref: master
+          path: project/hl2sdk-manifests
+          submodules: recursive
 
       - name: Checkout Metamod:Source
         uses: actions/checkout@v4
         with:
           repository: alliedmodders/metamod-source
           ref: master
-          path: metamod-source
+          path: project/metamod-source
+          submodules: recursive
 
       # Build
       - name: Build
         shell: bash
         run: |
           cd project && mkdir build && cd build
-          python ../configure.py --enable-optimize --plugin-name=advertisement --plugin-alias=advertisement --sdks=cs2 --targets=x86_64
+          python ../configure.py --hl2sdk-root=HL2SDKCS2 --enable-optimize --plugin-name=advertisement --plugin-alias=advertisement --sdks=cs2 --targets=x86_64
           ambuild
 
       - name: Upload artifact
