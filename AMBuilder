@@ -17,6 +17,13 @@ for sdk_target in MMSPlugin.sdk_targets:
     'advertisement.cpp', "utils/module.cpp", "utils/memaddr.cpp", "colors/colors.cpp", "ctimer.cpp",
   ]
 
+  if binary.compiler.family == 'gcc' or binary.compiler.family == 'clang':
+    binary.compiler.linkflags += ['-lstdc++']
+    binary.compiler.defines += ['_GLIBCXX_USE_CXX11_ABI=0']
+
+  if binary.compiler.family == 'clang':
+    binary.compiler.cxxflags += ['-Wno-register', '-frtti', '-Wno-invalid-offsetof', '-Wno-parentheses']
+
   if sdk.get('source2', False):
     binary.sources += [
       'provider/source2/provider_source2.cpp',
