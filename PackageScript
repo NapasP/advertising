@@ -42,7 +42,7 @@ for task in MMSPlugin.binaries:
     pdb_list.append(task.debug)
 
 builder.AddCopy(os.path.join(builder.buildPath, MMSPlugin.plugin_name + '.vdf'), metamod_folder)
-builder.AddCopy(os.path.join(builder.buildPath, '../addons/advertisement', 'advertisement.ini'), bin_folder_path)
+builder.AddCopy(os.path.join(builder.buildPath, '../addons/advertisement', 'advertisement.ini'), bin_folder)
 
 # Generate PDB info.
 with open(os.path.join(builder.buildPath, 'pdblog.txt'), 'wt') as fp:
