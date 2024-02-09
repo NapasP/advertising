@@ -31,7 +31,6 @@ IServerGameDLL *server = NULL;
 
 class GameSessionConfiguration_t { };
 
-// void UTIL_ClientPrintAll( int msg_dest, const char *msg_name, const char *param1, const char *param2, const char *param3, const char *param4 )
 void (*UTIL_ClientPrintAll)(int msg_dest, const char* msg_name, const char* param1, const char* param2, const char* param3, const char* param4) = nullptr;
 
 SH_DECL_HOOK3_void(IServerGameDLL, GameFrame, SH_NOATTRIB, 0, bool, bool, bool);
@@ -176,7 +175,7 @@ const char *AdvertisementPlugin::GetLicense()
 
 const char *AdvertisementPlugin::GetVersion()
 {
-	return "1.1";
+	return "1.2";
 }
 
 const char *AdvertisementPlugin::GetDate()
