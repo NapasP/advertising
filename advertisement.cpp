@@ -70,7 +70,7 @@ bool AdvertisementPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t m
 		countAdv = (countAdv+1)%advs.size();
 	});
 
-	const KeyValues* listAdv = kv->FindKey("list");
+	KeyValues* listAdv = kv->FindKey("list");
 	if (listAdv) {
 		for ( KeyValues* pKey = listAdv->GetFirstTrueSubKey(); pKey; pKey = pKey->GetNextTrueSubKey() )
 		{
