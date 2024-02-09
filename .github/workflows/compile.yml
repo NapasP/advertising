@@ -100,7 +100,7 @@ jobs:
         shell: bash
         run: |
           cd project && mkdir build && cd build
-          python ../configure.py --enable-optimize --plugin-name=advertisement --plugin-alias=advertisement --sdks=cs2 --targets=x86_64
+          python ../configure.py --hl2sdk-root=HL2SDKCS2 --enable-optimize --plugin-name=advertisement --plugin-alias=advertisement --sdks=cs2 --targets=x86_64
           ambuild
 
       - name: Upload artifact
