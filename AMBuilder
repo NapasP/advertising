@@ -13,7 +13,6 @@ for sdk_target in MMSPlugin.sdk_targets:
 
   PROTOS = [
     os.path.join(sdk['path'], 'common', 'network_connection.proto'),
-    os.path.join(sdk['path'], 'tier1', 'convar.cpp'),
   ]
 
   binary = MMSPlugin.HL2Library(builder, cxx, MMSPlugin.plugin_name, sdk)
