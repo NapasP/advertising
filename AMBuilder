@@ -1,12 +1,17 @@
 # vim: set sts=2 ts=8 sw=2 tw=99 et ft=python: 
 import os
 
-for sdk_target in MMS.sdk_targets:
+# Here only one sdk should be available to generate only one executable in the end,
+# as multi-sdk loading isn't supported out of the box by metamod, and would require specifying the full path in the vdf
+# which in the end would ruin the multi-platform (unix, win etc) loading by metamod as it won't be able to append platform specific extension
+# so just fall back to the single binary.
+# Multi-sdk solutions should be manually loaded with a custom plugin loader (examples being sourcemod, stripper:source)
+
+for sdk_target in MMSPlugin.sdk_targets:
   sdk = sdk_target.sdk
   cxx = sdk_target.cxx
   
-  name = MMSPlugin.plugin_name + sdk['extension']
-  binary = MMS.HL2Library(builder, cxx, name, sdk)
+  binary = MMSPlugin.HL2Library(builder, cxx, MMSPlugin.plugin_name, sdk)
 
   binary.sources += [
     'advertisement.cpp', "utils/module.cpp", "utils/memaddr.cpp", "colors/colors.cpp", "ctimer.cpp",
@@ -33,4 +38,4 @@ for sdk_target in MMS.sdk_targets:
   if cxx.target.arch == 'x86':
     binary.sources += ['sourcehook/sourcehook_hookmangen.cpp']
   nodes = builder.Add(binary)
-  MMS.binaries += [nodes]
+  MMSPlugin.binaries += [nodes]
