@@ -25,7 +25,7 @@ for sdk_name in MMSPlugin.sdks:
       os.path.join(sdk.path, 'public', 'tier0', 'memoverride.cpp'),
     ]
 
-    if sdk['name'] == 'cs2':
+    if sdk_name == 'cs2':
       binary.custom = [builder.tools.Protoc(protoc = sdk_target.protoc, sources = [
       os.path.join(sdk['path'], 'common', 'network_connection.proto'),
     ])]
