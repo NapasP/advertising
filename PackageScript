@@ -4,7 +4,7 @@ import os
 builder.SetBuildFolder('package')
 
 metamod_folder = builder.AddFolder(os.path.join('addons', 'metamod'))
-bin_folder_path = os.path.join('addons', MMSPlugin.plugin_name, 'bin')
+bin_folder_path = os.path.join('addons', MMSPlugin.plugin_name, '')
 bin_folder = builder.AddFolder(bin_folder_path)
 
 for cxx in MMSPlugin.all_targets:
