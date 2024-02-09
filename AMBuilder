@@ -15,14 +15,6 @@ for sdk_target in MMSPlugin.sdk_targets:
     os.path.join(sdk['path'], 'common', 'network_connection.proto'),
   ]
 
-  CXXINCLUDES = [
-      os.path.join(builder.sourcePath, 'hl2sdk-cs2'),
-      os.path.join(builder.sourcePath, 'hl2sdk-cs2', 'public', 'entity2'),
-      os.path.join(builder.sourcePath, 'hl2sdk-cs2', 'game', 'server'),
-  ]
-
-  binary.compiler.cxxincludes += CXXINCLUDES
-
   binary = MMSPlugin.HL2Library(builder, cxx, MMSPlugin.plugin_name, sdk)
 
   binary.sources += [
