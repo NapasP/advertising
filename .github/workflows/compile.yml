@@ -69,6 +69,14 @@ jobs:
           path: hl2sdk-cs2
           submodules: recursive
 
+      - name: Checkout hl2sdk-manifests
+        uses: actions/checkout@v4
+        with:
+          repository: alliedmodders/hl2sdk-manifests
+          ref: master
+          path: hl2sdk-manifests
+          submodules: recursive
+
       - name: Checkout Metamod:Source
         uses: actions/checkout@v4
         with:
