@@ -17,6 +17,8 @@ jobs:
   build:
     name: Build on ${{ matrix.os_short }}
     runs-on: ${{ matrix.os }}
+    env:
+        HL2SDKCS2: ${{ github.workspace }}/project/hl2sdk-cs2
     strategy:
       fail-fast: false
       matrix:
