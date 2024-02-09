@@ -18,7 +18,7 @@ def ResolveEnvPath(env, folder):
   return None
 
 SdkHelpers = builder.Eval('hl2sdk-manifests/SdkHelpers.ambuild', {
-    'Project': 'metamod'
+    'Project': 'advertising'
 })
 
 class MMSConfig(object):
