@@ -38,12 +38,7 @@ SH_DECL_HOOK3_void(INetworkServerService, StartupServer, SH_NOATTRIB, 0, const G
 
 CGlobalVars *GetGameGlobals()
 {
-	INetworkGameServer *server = g_pNetworkServerService->GetIGameServer();
-
-	if(!server)
-		return nullptr;
-
-	return g_pNetworkServerService->GetIGameServer()->GetGlobals();
+	return g_pEngineServer->GetServerGlobals();
 }
 
 PLUGIN_EXPOSE(AdvertisementPlugin, g_AdvertisementPlugin);
@@ -54,7 +49,8 @@ bool AdvertisementPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t m
 	GET_V_IFACE_ANY(GetServerFactory, server, IServerGameDLL, INTERFACEVERSION_SERVERGAMEDLL);
 	GET_V_IFACE_ANY(GetEngineFactory, g_pNetworkServerService, INetworkServerService, NETWORKSERVERSERVICE_INTERFACE_VERSION);
 	GET_V_IFACE_CURRENT(GetFileSystemFactory, filesystem, IFileSystem, FILESYSTEM_INTERFACE_VERSION);
-
+	GET_V_IFACE_CURRENT(GetEngineFactory, g_pEngineServer, IVEngineServer, INTERFACEVERSION_VENGINESERVER);
+	
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, GameFrame, server, this, &AdvertisementPlugin::Hook_GameFrame, true);
 	SH_ADD_HOOK_MEMFUNC(INetworkServerService, StartupServer, g_pNetworkServerService, this, &AdvertisementPlugin::Hook_StartupServer, true);
 
