@@ -122,7 +122,7 @@ void AdvertisementPlugin::Hook_GameFrame( bool simulating, bool bFirstTick, bool
 	}
 	else
 	{
-		g_flUniversalTime += GetGameGlobals()->realtime;
+		g_flUniversalTime += GetGameGlobals()->m_flSubtickFraction;
 	}
 
 	g_flLastTickedTime = GetGameGlobals()->curtime;
