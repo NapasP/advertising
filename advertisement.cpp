@@ -31,7 +31,6 @@ IServerGameDLL *server = NULL;
 
 class GameSessionConfiguration_t { };
 
-// void UTIL_ClientPrintAll( int msg_dest, const char *msg_name, const char *param1, const char *param2, const char *param3, const char *param4 )
 void (*UTIL_ClientPrintAll)(int msg_dest, const char* msg_name, const char* param1, const char* param2, const char* param3, const char* param4) = nullptr;
 
 SH_DECL_HOOK3_void(IServerGameDLL, GameFrame, SH_NOATTRIB, 0, bool, bool, bool);
@@ -39,12 +38,7 @@ SH_DECL_HOOK3_void(INetworkServerService, StartupServer, SH_NOATTRIB, 0, const G
 
 CGlobalVars *GetGameGlobals()
 {
-	INetworkGameServer *server = g_pNetworkServerService->GetIGameServer();
-
-	if(!server)
-		return nullptr;
-
-	return g_pNetworkServerService->GetIGameServer()->GetGlobals();
+	return g_pEngineServer->GetServerGlobals();
 }
 
 PLUGIN_EXPOSE(AdvertisementPlugin, g_AdvertisementPlugin);
@@ -55,7 +49,8 @@ bool AdvertisementPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t m
 	GET_V_IFACE_ANY(GetServerFactory, server, IServerGameDLL, INTERFACEVERSION_SERVERGAMEDLL);
 	GET_V_IFACE_ANY(GetEngineFactory, g_pNetworkServerService, INetworkServerService, NETWORKSERVERSERVICE_INTERFACE_VERSION);
 	GET_V_IFACE_CURRENT(GetFileSystemFactory, filesystem, IFileSystem, FILESYSTEM_INTERFACE_VERSION);
-
+	GET_V_IFACE_CURRENT(GetEngineFactory, g_pEngineServer, IVEngineServer, INTERFACEVERSION_VENGINESERVER);
+	
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, GameFrame, server, this, &AdvertisementPlugin::Hook_GameFrame, true);
 	SH_ADD_HOOK_MEMFUNC(INetworkServerService, StartupServer, g_pNetworkServerService, this, &AdvertisementPlugin::Hook_StartupServer, true);
 
@@ -70,9 +65,9 @@ bool AdvertisementPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t m
 		countAdv = (countAdv+1)%advs.size();
 	});
 
-	const KeyValues *listAdv = kv->FindKey("list");
+	KeyValues* listAdv = kv->FindKey("list");
 	if (listAdv) {
-		for ( KeyValues *pKey = listAdv->GetFirstTrueSubKey(); pKey; pKey = pKey->GetNextTrueSubKey() )
+		for ( KeyValues* pKey = listAdv->GetFirstTrueSubKey(); pKey; pKey = pKey->GetNextTrueSubKey() )
 		{
 			std::string text(pKey->GetString("text"));
 
@@ -127,7 +122,7 @@ void AdvertisementPlugin::Hook_GameFrame( bool simulating, bool bFirstTick, bool
 	}
 	else
 	{
-		g_flUniversalTime += GetGameGlobals()->interval_per_tick;
+		g_flUniversalTime += GetGameGlobals()->m_flSubtickFraction;
 	}
 
 	g_flLastTickedTime = GetGameGlobals()->curtime;
@@ -176,7 +171,7 @@ const char *AdvertisementPlugin::GetLicense()
 
 const char *AdvertisementPlugin::GetVersion()
 {
-	return "1.1";
+	return "1.2";
 }
 
 const char *AdvertisementPlugin::GetDate()
